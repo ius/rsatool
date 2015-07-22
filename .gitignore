@@ -1,0 +1,8 @@
+# Python stuff
+*.pyc
+*.pyo
+
+# Setuptools build dir
+/build
+/dist
+*.egg-info
