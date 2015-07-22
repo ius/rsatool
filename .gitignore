@@ -4,3 +4,5 @@
 
 # Setuptools build dir
 /build
+/dist
+*.egg-info
