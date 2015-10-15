@@ -127,7 +127,7 @@ if __name__ == '__main__':
     parser.add_option('-n', dest='n', help='modulus', type='int')
     parser.add_option('-d', dest='d', help='private exponent', type='int')
     parser.add_option('-e', dest='e', help='public exponent (default: %d)' % DEFAULT_EXP, type='int', default=DEFAULT_EXP)
-    parser.add_option('-o', dest='filename', help='output filname')
+    parser.add_option('-o', dest='filename', help='output filename')
     parser.add_option('-f', dest='format', help='output format (DER, PEM) (default: PEM)', type='choice', choices=['DER', 'PEM'], default='PEM')
     parser.add_option('-v', dest='verbose', help='also display CRT-RSA representation', action='store_true', default=False)
 
