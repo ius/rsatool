@@ -85,7 +85,7 @@ class RSA:
         """
         Return OpenSSL-compatible PEM encoded key
         """
-        return PEM_TEMPLATE % base64.encodestring(self.to_der())
+        return (PEM_TEMPLATE % base64.encodestring(self.to_der()).decode()).encode()
 
     def to_der(self):
         """
@@ -110,13 +110,13 @@ class RSA:
     def _dumpvar(self, var):
         val = getattr(self, var)
 
-        parts = lambda s, l: '\n'.join([s[i:i+l] for i in xrange(0, len(s), l)])
+        parts = lambda s, l: '\n'.join([s[i:i+l] for i in range(0, len(s), l)])
 
         if len(str(val)) <= 40:
-            print '%s = %d (%#x)\n' % (var, val, val)
+            print('%s = %d (%#x)\n' % (var, val, val))
         else:
-            print '%s =' % var
-            print parts('%x' % val, 80) + '\n'
+            print('%s =' % var)
+            print(parts('%x' % val, 80) + '\n')
 
 
 if __name__ == '__main__':
@@ -135,10 +135,10 @@ if __name__ == '__main__':
         (options, args) = parser.parse_args()
 
         if options.p and options.q:
-            print 'Using (p, q) to initialise RSA instance\n'
+            print('Using (p, q) to initialise RSA instance\n')
             rsa = RSA(p=options.p, q=options.q, e=options.e)
         elif options.n and options.d:
-            print 'Using (n, d) to initialise RSA instance\n'
+            print('Using (n, d) to initialise RSA instance\n')
             rsa = RSA(n=options.n, d=options.d, e=options.e)
         else:
             parser.print_help()
@@ -147,7 +147,7 @@ if __name__ == '__main__':
         rsa.dump(options.verbose)
 
         if options.filename:
-            print 'Saving %s as %s' % (options.format, options.filename)
+            print('Saving %s as %s' % (options.format, options.filename))
 
 
             if options.format == 'PEM':
@@ -159,6 +159,6 @@ if __name__ == '__main__':
             fp.write(data)
             fp.close()
 
-    except optparse.OptionValueError, e:
+    except optparse.OptionValueError as e:
         parser.print_help()
         parser.error(e.msg)
