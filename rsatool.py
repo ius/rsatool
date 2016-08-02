@@ -1,6 +1,12 @@
 #!/usr/bin/env python2
 import base64, fractions, optparse, random
-import gmpy
+try:
+    import gmpy
+except ImportError as e:
+    try:
+        import gmpy2 as gmpy
+    except ImportError:
+        raise e
 
 from pyasn1.codec.der import encoder
 from pyasn1.type.univ import *
