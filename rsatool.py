@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 import base64, fractions, optparse, random
 try:
     import gmpy
@@ -50,7 +50,7 @@ def factor_modulus(n, d, e):
             i += 1
 
     p = fractions.gcd(c1-1, n)
-    q = (n / p)
+    q = n // p
 
     return p, q
 
