@@ -79,7 +79,11 @@ class RSA:
     def _calc_values(self):
         self.n = self.p * self.q
 
-        phi = (self.p - 1) * (self.q - 1)
+        if self.p != self.q:
+            phi = (self.p - 1) * (self.q - 1)
+        else:
+            phi = (self.p ** 2) - self.p
+
         self.d = gmpy.invert(self.e, phi)
 
         # CRT-RSA precomputation
