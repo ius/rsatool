@@ -50,7 +50,7 @@ def factor_modulus(n, d, e):
             i += 1
 
     p = fractions.gcd(c1-1, n)
-    q = (n / p)
+    q = n // p
 
     return p, q
 
