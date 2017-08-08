@@ -9,7 +9,8 @@ except ImportError as e:
         raise e
 
 from pyasn1.codec.der import encoder
-from pyasn1.type.univ import *
+from pyasn1.type import univ
+from pyasn1.type.univ import Sequence
 
 PEM_TEMPLATE = '-----BEGIN RSA PRIVATE KEY-----\n%s-----END RSA PRIVATE KEY-----\n'
 DEFAULT_EXP = 65537
@@ -101,10 +102,10 @@ class RSA:
         """
         Return parameters as OpenSSL compatible DER encoded key
         """
-        seq = Sequence()
+        seq = univ.SequenceOf(componentType=univ.Integer())
 
         for x in [0, self.n, self.e, self.d, self.p, self.q, self.dP, self.dQ, self.qInv]:
-            seq.setComponentByPosition(len(seq), Integer(x))
+            seq.append(univ.Integer(x))
 
         return encoder.encode(seq)
 
