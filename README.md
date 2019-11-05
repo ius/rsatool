@@ -9,7 +9,7 @@ Requirements
 ------------
 
 * python v2.6+
-* [pyasn1][1]
+* [pyasn1==0.1.9][1]
 * [gmpy][2]
 
 Usage examples
