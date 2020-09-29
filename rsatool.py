@@ -103,8 +103,8 @@ class RSA:
         """
         seq = Sequence()
 
-        for x in [0, self.n, self.e, self.d, self.p, self.q, self.dP, self.dQ, self.qInv]:
-            seq.setComponentByPosition(len(seq), Integer(x))
+        for i, x in enumerate([0, self.n, self.e, self.d, self.p, self.q, self.dP, self.dQ, self.qInv]):
+            seq.setComponentByPosition(i, Integer(x))
 
         return encoder.encode(seq)
 
