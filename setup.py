@@ -9,6 +9,6 @@ setup(name='rsatool',
         author='Joerie de Gram',
         author_email='j.de.gram@gmail.com',
         url='https://github.com/ius/rsatool',
-        install_requires=['gmpy', 'pyasn1'],
+        install_requires=['gmpy2', 'pyasn1'],
         scripts=['rsatool.py']
         )
