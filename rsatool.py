@@ -1,5 +1,10 @@
 #!/usr/bin/env python2
-import base64, fractions, optparse, random
+import base64
+import fractions
+import argparse
+import random
+import sys
+
 try:
     import gmpy
 except ImportError as e:
@@ -9,10 +14,11 @@ except ImportError as e:
         raise e
 
 from pyasn1.codec.der import encoder
-from pyasn1.type.univ import *
+from pyasn1.type.univ import Sequence, Integer
 
-PEM_TEMPLATE = '-----BEGIN RSA PRIVATE KEY-----\n%s-----END RSA PRIVATE KEY-----\n'
+PEM_TEMPLATE = b'-----BEGIN RSA PRIVATE KEY-----\n%s-----END RSA PRIVATE KEY-----\n'
 DEFAULT_EXP = 65537
+
 
 def factor_modulus(n, d, e):
     """
@@ -39,7 +45,7 @@ def factor_modulus(n, d, e):
 
     while not found:
         i = 1
-        a = random.randint(1,n-1)
+        a = random.randint(1, n-1)
 
         while i <= s and not found:
             c1 = pow(a, pow(2, i-1, n) * t, n)
@@ -53,6 +59,7 @@ def factor_modulus(n, d, e):
     q = n // p
 
     return p, q
+
 
 class RSA:
     def __init__(self, p=None, q=None, n=None, d=None, e=DEFAULT_EXP):
@@ -69,7 +76,7 @@ class RSA:
 
             self.p = p
             self.q = q
-        elif n and d:   
+        elif n and d:
             self.p, self.q = factor_modulus(n, d, e)
         else:
             raise ArgumentError('Either (p, q) or (n, d) must be provided')
@@ -95,7 +102,7 @@ class RSA:
         """
         Return OpenSSL-compatible PEM encoded key
         """
-        return (PEM_TEMPLATE % base64.encodestring(self.to_der()).decode()).encode()
+        return PEM_TEMPLATE % base64.encodebytes(self.to_der())
 
     def to_der(self):
         """
@@ -103,8 +110,8 @@ class RSA:
         """
         seq = Sequence()
 
-        for x in [0, self.n, self.e, self.d, self.p, self.q, self.dP, self.dQ, self.qInv]:
-            seq.setComponentByPosition(len(seq), Integer(x))
+        for idx, x in enumerate([0, self.n, self.e, self.d, self.p, self.q, self.dP, self.dQ, self.qInv]):
+            seq.setComponentByPosition(idx, Integer(x))
 
         return encoder.encode(seq)
 
@@ -120,7 +127,8 @@ class RSA:
     def _dumpvar(self, var):
         val = getattr(self, var)
 
-        parts = lambda s, l: '\n'.join([s[i:i+l] for i in range(0, len(s), l)])
+        def parts(s, l): return '\n'.join(
+            [s[i:i+l] for i in range(0, len(s), l)])
 
         if len(str(val)) <= 40:
             print('%s = %d (%#x)\n' % (var, val, val))
@@ -130,45 +138,46 @@ class RSA:
 
 
 if __name__ == '__main__':
-    parser = optparse.OptionParser()
+    parser = argparse.ArgumentParser()
 
-    parser.add_option('-p', dest='p', help='prime', type='int')
-    parser.add_option('-q', dest='q', help='prime', type='int')
-    parser.add_option('-n', dest='n', help='modulus', type='int')
-    parser.add_option('-d', dest='d', help='private exponent', type='int')
-    parser.add_option('-e', dest='e', help='public exponent (default: %d)' % DEFAULT_EXP, type='int', default=DEFAULT_EXP)
-    parser.add_option('-o', dest='filename', help='output filename')
-    parser.add_option('-f', dest='format', help='output format (DER, PEM) (default: PEM)', type='choice', choices=['DER', 'PEM'], default='PEM')
-    parser.add_option('-v', dest='verbose', help='also display CRT-RSA representation', action='store_true', default=False)
+    parser.add_argument('-n', help='modulus. format : int or 0xhex', type=lambda x: int(x, 0))
+    parser.add_argument('-p', help='first prime number. format : int or 0xhex', type=lambda x: int(x, 0))
+    parser.add_argument('-q', help='second prime number. format : int or 0xhex', type=lambda x: int(x, 0))
+    parser.add_argument('-d', help='private exponent. format : int or 0xhex',
+                        type=lambda x: int(x, 0))
+    parser.add_argument('-e', help='public exponent (default: %d). format : int or 0xhex' %
+                        DEFAULT_EXP, default=DEFAULT_EXP, type=lambda x: int(x, 0))
+    parser.add_argument('-o', '--output', help='output filename')
+    parser.add_argument('-f', '--format', help='output format (DER, PEM) (default: PEM)',
+                        choices=['DER', 'PEM'], default='PEM')
+    parser.add_argument('-v', '--verbose', help='also display CRT-RSA representation',
+                        action='store_true', default=False)
 
-    try:
-        (options, args) = parser.parse_args()
+    args = parser.parse_args()
 
-        if options.p and options.q:
-            print('Using (p, q) to initialise RSA instance\n')
-            rsa = RSA(p=options.p, q=options.q, e=options.e)
-        elif options.n and options.d:
-            print('Using (n, d) to initialise RSA instance\n')
-            rsa = RSA(n=options.n, d=options.d, e=options.e)
-        else:
-            parser.print_help()
-            parser.error('Either (p, q) or (n, d) needs to be specified')
-
-        rsa.dump(options.verbose)
-
-        if options.filename:
-            print('Saving %s as %s' % (options.format, options.filename))
-
-
-            if options.format == 'PEM':
-                data = rsa.to_pem()
-            elif options.format == 'DER':
-                data = rsa.to_der()
-
-            fp = open(options.filename, 'wb')
-            fp.write(data)
-            fp.close()
-
-    except optparse.OptionValueError as e:
+    if args.p and args.q:
+        print('Using (p, q) to initialise RSA instance\n')
+        rsa = RSA(p=args.p, q=args.q, e=args.e)
+    elif args.n and args.d:
+        print('Using (n, d) to initialise RSA instance\n')
+        rsa = RSA(n=args.n, d=args.d, e=args.e)
+    else:
         parser.print_help()
-        parser.error(e.msg)
+        parser.error('Either (p, q) or (n, d) needs to be specified')
+
+    rsa.dump(args.verbose)
+
+    if args.format == 'PEM':
+        data = rsa.to_pem()
+    elif args.format == 'DER':
+        data = rsa.to_der()
+
+    if args.output:
+        print('Saving %s as %s' % (args.format, args.output))
+
+        fp = open(args.output, 'wb')
+        fp.write(data)
+        fp.close()
+
+    else:
+        sys.stdout.buffer.write(data)
