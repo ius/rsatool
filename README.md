@@ -8,9 +8,9 @@ Resulting parameters are displayed and can optionally be written as an OpenSSL c
 Requirements
 ------------
 
-* python v2.6+
+* python v3.7+
 * [pyasn1][1]
-* [gmpy][2]
+* [gmpy2][2]
 
 Usage examples
 --------------
@@ -24,4 +24,4 @@ Supplying two primes, DER output to key.der:
     python rsatool.py -f DER -o key.der -p 4184799299 -q 3303891593
 
 [1]: http://pypi.python.org/pypi/pyasn1/
-[2]: http://pypi.python.org/pypi/gmpy/
+[2]: http://pypi.python.org/pypi/gmpy2/
