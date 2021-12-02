@@ -13,6 +13,11 @@ except ImportError as e:
     except ImportError:
         raise e
 
+if sys.version_info >= (3,5):
+    from math import gcd
+else:
+    from fractions import gcd
+
 from pyasn1.codec.der import encoder
 from pyasn1.type.univ import Sequence, Integer
 
@@ -55,7 +60,7 @@ def factor_modulus(n, d, e):
 
             i += 1
 
-    p = fractions.gcd(c1-1, n)
+    p = gcd(c1-1, n)
     q = n // p
 
     return p, q
