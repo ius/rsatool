@@ -30,6 +30,9 @@ def factor_modulus(n, d, e):
     t = (e * d - 1)
     s = 0
 
+    if 17 !=  gmpy2.powmod(17, e*d, n):
+        raise ValueError("n, d, e don't match")
+
     while True:
         quotient, remainder = divmod(t, 2)
 
