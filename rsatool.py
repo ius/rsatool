@@ -4,14 +4,7 @@ import fractions
 import argparse
 import random
 import sys
-
-try:
-    import gmpy
-except ImportError as e:
-    try:
-        import gmpy2 as gmpy
-    except ImportError:
-        raise e
+import gmpy2
 
 if sys.version_info >= (3,5):
     from math import gcd
@@ -76,8 +69,8 @@ class RSA:
         self.e = e
 
         if p and q:
-            assert gmpy.is_prime(p), 'p is not prime'
-            assert gmpy.is_prime(q), 'q is not prime'
+            assert gmpy2.is_prime(p), 'p is not prime'
+            assert gmpy2.is_prime(q), 'q is not prime'
 
             self.p = p
             self.q = q
@@ -96,12 +89,12 @@ class RSA:
         else:
             phi = (self.p ** 2) - self.p
 
-        self.d = gmpy.invert(self.e, phi)
+        self.d = gmpy2.invert(self.e, phi)
 
         # CRT-RSA precomputation
         self.dP = self.d % (self.p - 1)
         self.dQ = self.d % (self.q - 1)
-        self.qInv = gmpy.invert(self.q, self.p)
+        self.qInv = gmpy2.invert(self.q, self.p)
 
     def to_pem(self):
         """
