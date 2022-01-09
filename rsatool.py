@@ -6,7 +6,7 @@ import random
 import sys
 import gmpy2
 
-if sys.version_info >= (3,5):
+if sys.version_info >= (3, 5):
     from math import gcd
 else:
     from fractions import gcd
@@ -30,7 +30,7 @@ def factor_modulus(n, d, e):
     t = (e * d - 1)
     s = 0
 
-    if 17 !=  gmpy2.powmod(17, e*d, n):
+    if 17 != gmpy2.powmod(17, e * d, n):
         raise ValueError("n, d, e don't match")
 
     while True:
@@ -46,17 +46,17 @@ def factor_modulus(n, d, e):
 
     while not found:
         i = 1
-        a = random.randint(1, n-1)
+        a = random.randint(1, n - 1)
 
         while i <= s and not found:
-            c1 = pow(a, pow(2, i-1, n) * t, n)
+            c1 = pow(a, pow(2, i - 1, n) * t, n)
             c2 = pow(a, pow(2, i, n) * t, n)
 
             found = c1 != 1 and c1 != (-1 % n) and c2 == 1
 
             i += 1
 
-    p = gcd(c1-1, n)
+    p = gcd(c1 - 1, n)
     q = n // p
 
     return p, q
@@ -128,8 +128,8 @@ class RSA:
     def _dumpvar(self, var):
         val = getattr(self, var)
 
-        def parts(s, l): return '\n'.join(
-            [s[i:i+l] for i in range(0, len(s), l)])
+        def parts(s, l):
+            return '\n'.join([s[i:i + l] for i in range(0, len(s), l)])
 
         if len(str(val)) <= 40:
             print('%s = %d (%#x)\n' % (var, val, val))
