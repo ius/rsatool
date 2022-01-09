@@ -80,7 +80,7 @@ class RSA:
         elif n and d:
             self.p, self.q = factor_modulus(n, d, e)
         else:
-            raise ArgumentError('Either (p, q) or (n, d) must be provided')
+            raise ValueError('Either (p, q) or (n, d) must be provided')
 
         self._calc_values()
 
