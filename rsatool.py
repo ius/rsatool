@@ -1,15 +1,9 @@
 #!/usr/bin/env python3
 import base64
-import fractions
 import argparse
 import random
 import sys
 import gmpy2
-
-if sys.version_info >= (3, 5):
-    from math import gcd
-else:
-    from fractions import gcd
 
 from pyasn1.codec.der import encoder
 from pyasn1.type.univ import Sequence, Integer
@@ -56,7 +50,7 @@ def factor_modulus(n, d, e):
 
             i += 1
 
-    p = gcd(c1 - 1, n)
+    p = gmpy2.gcd(c1 - 1, n)
     q = n // p
 
     return p, q
