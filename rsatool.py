@@ -122,8 +122,8 @@ class RSA:
     def _dumpvar(self, var):
         val = getattr(self, var)
 
-        def parts(s, l):
-            return '\n'.join([s[i:i + l] for i in range(0, len(s), l)])
+        def parts(s, x):
+            return '\n'.join([s[i:i + x] for i in range(0, len(s), x)])
 
         if len(str(val)) <= 40:
             print('%s = %d (%#x)\n' % (var, val, val))
