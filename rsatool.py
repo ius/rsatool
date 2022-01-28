@@ -151,10 +151,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.p and args.q:
-        print('Using (p, q) to initialise RSA instance\n')
+        print('Using (p, q) to calculate RSA paramaters\n')
         rsa = RSA(p=args.p, q=args.q, e=args.e)
     elif args.n and args.d:
-        print('Using (n, d) to initialise RSA instance\n')
+        print('Using (n, d) to calculate RSA parameters\n')
         rsa = RSA(n=args.n, d=args.d, e=args.e)
     else:
         parser.print_help()
