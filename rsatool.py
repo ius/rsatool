@@ -172,6 +172,9 @@ if __name__ == '__main__':
         parser.print_help()
         parser.error('Either (p, q) or (n, d) needs to be specified')
 
+    if args.format == 'DER' and not args.output:
+        parser.error('Output filename (-o) required for DER output')
+
     rsa.dump(args.verbose)
 
     if args.format == 'PEM':
@@ -185,6 +188,5 @@ if __name__ == '__main__':
         fp = open(args.output, 'wb')
         fp.write(data)
         fp.close()
-
     else:
         sys.stdout.buffer.write(data)
