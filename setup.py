@@ -9,4 +9,4 @@ setup(name='rsatool',
       url='https://github.com/ius/rsatool',
       install_requires=['gmpy2', 'pyasn1'],
       scripts=['rsatool.py']
-)
+      )
