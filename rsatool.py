@@ -3,12 +3,18 @@ import base64
 import argparse
 import random
 import sys
+
 import gmpy2
 
 from pyasn1.codec.der import encoder
 from pyasn1.type.univ import Sequence, Integer
 
-PEM_TEMPLATE = b'-----BEGIN RSA PRIVATE KEY-----\n%s-----END RSA PRIVATE KEY-----\n'
+PEM_TEMPLATE = (
+    b'-----BEGIN RSA PRIVATE KEY-----\n'
+    b'%s'
+    b'-----END RSA PRIVATE KEY-----'
+)
+
 DEFAULT_EXP = 65537
 
 
@@ -21,7 +27,7 @@ def factor_modulus(n, d, e):
 
     http://www.cacr.math.uwaterloo.ca/hac/
     """
-    t = (e * d - 1)
+    t = e * d - 1
     s = 0
 
     if 17 != gmpy2.powmod(17, e * d, n):
@@ -105,7 +111,9 @@ class RSA:
         """
         seq = Sequence()
 
-        for idx, x in enumerate([0, self.n, self.e, self.d, self.p, self.q, self.dP, self.dQ, self.qInv]):
+        for idx, x in enumerate(
+            [0, self.n, self.e, self.d, self.p, self.q, self.dP, self.dQ, self.qInv]
+        ):
             seq.setComponentByPosition(idx, Integer(x))
 
         return encoder.encode(seq)
@@ -122,8 +130,8 @@ class RSA:
     def _dumpvar(self, var):
         val = getattr(self, var)
 
-        def parts(s, l):
-            return '\n'.join([s[i:i + l] for i in range(0, len(s), l)])
+        def parts(s, n):
+            return '\n'.join([s[i:i + n] for i in range(0, len(s), n)])
 
         if len(str(val)) <= 40:
             print('%s = %d (%#x)\n' % (var, val, val))
@@ -135,18 +143,22 @@ class RSA:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-n', help='modulus. format : int or 0xhex', type=lambda x: int(x, 0))
-    parser.add_argument('-p', help='first prime number. format : int or 0xhex', type=lambda x: int(x, 0))
-    parser.add_argument('-q', help='second prime number. format : int or 0xhex', type=lambda x: int(x, 0))
-    parser.add_argument('-d', help='private exponent. format : int or 0xhex',
-                        type=lambda x: int(x, 0))
-    parser.add_argument('-e', help='public exponent (default: %d). format : int or 0xhex' %
-                        DEFAULT_EXP, default=DEFAULT_EXP, type=lambda x: int(x, 0))
+    parser.add_argument('-n', type=lambda x: int(x, 0),
+                        help='modulus. format : int or 0xhex')
+    parser.add_argument('-p', type=lambda x: int(x, 0),
+                        help='first prime number. format : int or 0xhex')
+    parser.add_argument('-q', type=lambda x: int(x, 0),
+                        help='second prime number. format : int or 0xhex')
+    parser.add_argument('-d', type=lambda x: int(x, 0),
+                        help='private exponent. format : int or 0xhex')
+    parser.add_argument('-e', type=lambda x: int(x, 0),
+                        help='public exponent (default: %d). format : int or 0xhex' %
+                        DEFAULT_EXP, default=DEFAULT_EXP)
     parser.add_argument('-o', '--output', help='output filename')
-    parser.add_argument('-f', '--format', help='output format (DER, PEM) (default: PEM)',
-                        choices=['DER', 'PEM'], default='PEM')
-    parser.add_argument('-v', '--verbose', help='also display CRT-RSA representation',
-                        action='store_true', default=False)
+    parser.add_argument('-f', '--format', choices=['DER', 'PEM'], default='PEM',
+                        help='output format (DER, PEM) (default: PEM)')
+    parser.add_argument('-v', '--verbose', action='store_true', default=False,
+                        help='also display CRT-RSA representation')
 
     args = parser.parse_args()
 
