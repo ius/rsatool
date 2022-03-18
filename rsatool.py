@@ -3,6 +3,7 @@ import base64
 import argparse
 import random
 import sys
+import textwrap
 
 import gmpy2
 
@@ -10,9 +11,9 @@ from pyasn1.codec.der import encoder
 from pyasn1.type.univ import Sequence, Integer
 
 PEM_TEMPLATE = (
-    b'-----BEGIN RSA PRIVATE KEY-----\n'
-    b'%s'
-    b'-----END RSA PRIVATE KEY-----'
+    '-----BEGIN RSA PRIVATE KEY-----\n'
+    '%s\n'
+    '-----END RSA PRIVATE KEY-----\n'
 )
 
 DEFAULT_EXP = 65537
@@ -103,7 +104,9 @@ class RSA:
         """
         Return OpenSSL-compatible PEM encoded key
         """
-        return PEM_TEMPLATE % base64.encodebytes(self.to_der())
+        b64 = base64.b64encode(self.to_der()).decode()
+        b64w = "\n".join(textwrap.wrap(b64, 64))
+        return (PEM_TEMPLATE % b64w).encode()
 
     def to_der(self):
         """
