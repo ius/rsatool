@@ -177,7 +177,7 @@ if __name__ == '__main__':
                         help='public exponent (default: %d). format : int or 0xhex' %
                         DEFAULT_EXP, default=DEFAULT_EXP)
     parser.add_argument('--dp', type=lambda x: int(x, 0),
-                        help='d (mod p−1) or d (mod q−1) : int or 0xhex')
+                        help='d (mod p-1) or d (mod q-1) : int or 0xhex')
     parser.add_argument('-o', '--output', help='output filename')
     parser.add_argument('-f', '--format', choices=['DER', 'PEM'], default='PEM',
                         help='output format (DER, PEM) (default: PEM)')
