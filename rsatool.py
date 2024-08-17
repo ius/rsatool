@@ -63,8 +63,25 @@ def factor_modulus(n, d, e):
     return p, q
 
 
+def factor_dp(n, dp, e):
+    # algorithm from https://eprint.iacr.org/2020/1506.pdf page 9
+    p = 1
+    v = 2
+    while p == 1:
+        a = gmpy2.mpz(v)
+        t = gmpy2.powmod(a, e * dp - 1, n) - 1
+        p = gmpy2.gcd(t, n)
+        v += 1
+        if v > 100:
+            raise ValueError("Factorization/dp: no success after 100 tries")
+    q = n // p
+    if p * q != n:
+        raise ValueError("Factorization with dp failed")
+    return p, q
+
+
 class RSA:
-    def __init__(self, p=None, q=None, n=None, d=None, e=DEFAULT_EXP):
+    def __init__(self, p=None, q=None, n=None, d=None, dp=None, e=DEFAULT_EXP):
         """
         Initialize RSA instance using primes (p, q)
         or modulus and private exponent (n, d)
@@ -80,6 +97,8 @@ class RSA:
             self.q = q
         elif n and d:
             self.p, self.q = factor_modulus(n, d, e)
+        elif n and dp:
+            self.p, self.q = factor_dp(n, dp, e)
         else:
             raise ValueError('Either (p, q) or (n, d) must be provided')
 
@@ -157,6 +176,8 @@ if __name__ == '__main__':
     parser.add_argument('-e', type=lambda x: int(x, 0),
                         help='public exponent (default: %d). format : int or 0xhex' %
                         DEFAULT_EXP, default=DEFAULT_EXP)
+    parser.add_argument('--dp', type=lambda x: int(x, 0),
+                        help='d (mod p−1) or d (mod q−1) : int or 0xhex')
     parser.add_argument('-o', '--output', help='output filename')
     parser.add_argument('-f', '--format', choices=['DER', 'PEM'], default='PEM',
                         help='output format (DER, PEM) (default: PEM)')
@@ -171,6 +192,9 @@ if __name__ == '__main__':
     elif args.n and args.d:
         print('Using (n, d) to calculate RSA parameters\n')
         rsa = RSA(n=args.n, d=args.d, e=args.e)
+    elif args.n and args.dp:
+        print('Using (n, dp) to calculate RSA parameters\n')
+        rsa = RSA(n=args.n, dp=args.dp, e=args.e)
     else:
         parser.print_help()
         parser.error('Either (p, q) or (n, d) needs to be specified')
