@@ -197,7 +197,7 @@ if __name__ == '__main__':
         rsa = RSA(n=args.n, dp=args.dp, e=args.e)
     else:
         parser.print_help()
-        parser.error('Either (p, q) or (n, d) needs to be specified')
+        parser.error('Either (p, q), (n, d) or (n, dp) needs to be specified')
 
     if args.format == 'DER' and not args.output:
         parser.error('Output filename (-o) required for DER output')
