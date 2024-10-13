@@ -45,7 +45,11 @@ def factor_modulus(n, d, e):
 
     found = False
 
+    tries = 0
     while not found:
+        tries += 1
+        if tries >= 1000:
+            raise ValueError("Factorization/d: no success after 1000 tries")
         i = 1
         a = random.randint(1, n - 1)
 
