@@ -31,6 +31,9 @@ def factor_modulus(n, d, e):
     t = e * d - 1
     s = 0
 
+    if d <= 1 or e <= 1:
+        raise ValueError("d, e can't be <=1")
+
     if 17 != gmpy2.powmod(17, e * d, n):
         raise ValueError("n, d, e don't match")
 
